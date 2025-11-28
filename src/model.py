@@ -640,14 +640,12 @@ class WaveletUNet(tf.keras.Model):
         current_layer = tf.concat([full_mix, current_layer], axis=-1)
         
         # uncomment for residual version (pre 5-14-25)
-        partial_outputs = self.output_conv(current_layer)
-        residual_source = full_mix - tf.reduce_sum(partial_outputs, axis=-1, keepdims=True)
-        outputs = tf.concat([partial_outputs, residual_source], axis=-1)
+        outputs = self.output_conv(current_layer) 
         
         # uncomment for non residual version (post 5-14-25)
         # outputs = self.output_conv(current_layer)
         
-        outputs = tf.transpose(outputs, [0, 2, 1])  # (batch, sources, time)
+        # outputs = tf.transpose(outputs, [0, 2, 1])  # (batch, sources, time)
         
         return outputs
 
