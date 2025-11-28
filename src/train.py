@@ -10,8 +10,8 @@ import soundfile as sf
 import librosa
 import pywt
 from utils.Pipeline import (
-    create_tf_dataset,
-    create_tf_dataset_from_tfrecords,
+    MP3DegradationPipeline,
+    create_training_dataset
 )
 from utils.config import Config, RetrainConfig, RetrainConfig_flipped
 from model import (
@@ -105,17 +105,17 @@ def train_model(clips_dir=None, tfrecords_dir=None, save_directory=None, model=N
     
     print("Starting audio source separation pipeline...")
 
-    if clips_dir and not tfrecords_dir:
-        print("Creating TensorFlow dataset for training from WAV files...")
-        dataset = create_tf_dataset(
-            base_dir=config.DATA_DIR,
-            clips_dir=clips_dir,
-            num_speakers=config.MAX_SOURCES,
-            batch_size=config.BATCH_SIZE
-        )
-        train_dataset = dataset.take(train_steps).repeat()
-        val_dataset = dataset.skip(train_steps).take(val_steps).repeat()
-    elif tfrecords_dir and not clips_dir:
+    # if clips_dir and not tfrecords_dir:
+    #     print("Creating TensorFlow dataset for training from WAV files...")
+    #     dataset = create_training_dataset(
+    #         base_dir=config.DATA_DIR,
+    #         clips_dir=clips_dir,
+    #         num_speakers=config.MAX_SOURCES,
+    #         batch_size=config.BATCH_SIZE
+    #     )
+    #     train_dataset = dataset.take(train_steps).repeat()
+    #     val_dataset = dataset.skip(train_steps).take(val_steps).repeat()
+    if tfrecords_dir and not clips_dir:
         print("Creating TensorFlow dataset for training from TFRecords...")
         tfrecord_files = tf.io.gfile.glob(f"{tfrecords_dir}/*.tfrecord")
         if not tfrecord_files:
@@ -128,22 +128,24 @@ def train_model(clips_dir=None, tfrecords_dir=None, save_directory=None, model=N
         print(f"Num train records: {len(tfrecord_files) - num_val_records}")
         train_records = tfrecord_files[:-num_val_records]
         val_records = tfrecord_files[-num_val_records:]
+        
+    
+        # Choose pipeline
+        # Option 1: Real MP3 encoding (more realistic)
+        pipeline = MP3DegradationPipeline(mp3_bitrates=[64, 96, 128, 160, 192, 256])
+        
+        # Create dataset
+        train_dataset = pipeline.create_training_dataset(
+            train_records,  # 90% for training
+            batch_size=16
+        )
+        
+        val_dataset = pipeline.create_training_dataset(
+            val_records,  # 10% for validation
+            batch_size=16
+        )
 
-        train_dataset = create_tf_dataset_from_tfrecords(
-            tfrecord_files=train_records,
-            min_sources=config.MIN_SOURCES,
-            max_sources=config.MAX_SOURCES,
-            batch_size=config.BATCH_SIZE,
-            is_train=True
-        )
-        val_dataset = create_tf_dataset_from_tfrecords(
-            tfrecord_files=val_records,
-            min_sources=config.MIN_SOURCES,
-            # min_sources=1,
-            max_sources=config.MAX_SOURCES,
-            batch_size=config.BATCH_SIZE,
-            is_train=False
-        )
+        print(f"Training dataset ready")
 
     train_size = int(config.NUM_EXAMPLES * (1 - config.VAL_SPLIT))
     val_size = int(config.NUM_EXAMPLES * config.VAL_SPLIT)
@@ -173,12 +175,13 @@ def train_model(clips_dir=None, tfrecords_dir=None, save_directory=None, model=N
     
     print("Compiling model with PIT loss...")
     optimizer = tf.keras.optimizers.Adam(learning_rate=config.LEARNING_RATE)
+    loss_fn = tf.keras.losses.MeanSquaredError()
     dummy_input = tf.zeros((config.BATCH_SIZE, config.SEGMENT_LENGTH, 1))
     _ = model(dummy_input)
     
     model.compile(
         optimizer=optimizer,
-        loss=pit_loss,
+        loss=loss_fn,
         metrics=['mse'],
         jit_compile=True
     )

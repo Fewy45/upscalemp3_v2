@@ -3,3 +3,6 @@ checkpoints/
 __pycache__/
 models/
 *.wav
+tfrecords_44k/
+test_outputs/
+*.ipynb

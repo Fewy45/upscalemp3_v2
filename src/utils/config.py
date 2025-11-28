@@ -3,15 +3,15 @@ class Config_small: # swapped to 32 filters US 16 DS
     # Data settings
     DATA_DIR = "data/audio"
     CLIPS_DIR = "data/clips"
-    SAMPLE_RATE = 16000
-    SEGMENT_LENGTH = 16000  # 1 second at 16kHz
+    SAMPLE_RATE = 41000
+    SEGMENT_LENGTH = 41000  # 1 second at 16kHz
     
     # Model settings
-    NUM_COEFFS = 16000  # 1 second at 16kHz
+    NUM_COEFFS = 41000  # 1 second at 16kHz
     WAVELET_DEPTH = 5
     BATCH_SIZE = 16 # 16-32
     CHANNELS = 1  # Mono audio
-    NUM_LAYERS = 11 # 10-12
+    NUM_LAYERS = 10 # 10-12
     NUM_INIT_FILTERS = 16 ## was 24
     FILTER_SIZE = 16 # was 16 should be 16
     MERGE_FILTER_SIZE = 16 # was 5 should be like 8
@@ -27,8 +27,8 @@ class Config_small: # swapped to 32 filters US 16 DS
     CACHE_REFRESH_EVERY = 5
     
     # Mixture generation
-    MIN_SOURCES = 2
-    MAX_SOURCES = 2 # first curriculum learning
+    MIN_SOURCES = 1
+    MAX_SOURCES = 1 # first curriculum learning
     NUM_EXAMPLES = BATCH_SIZE * 4000
     
     
