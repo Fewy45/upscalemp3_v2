@@ -29,7 +29,7 @@ class Config_small: # swapped to 32 filters US 16 DS
     # Mixture generation
     MIN_SOURCES = 1
     MAX_SOURCES = 1 # first curriculum learning
-    NUM_EXAMPLES = BATCH_SIZE * 4000
+    NUM_EXAMPLES = BATCH_SIZE * 4200
     
     
     # Wavelet settings
@@ -213,7 +213,7 @@ class RetrainConfig_flipped:
     # Mixture generation
     MIN_SOURCES = 2
     MAX_SOURCES = 2 # first curriculum learning
-    NUM_EXAMPLES = BATCH_SIZE * 4000
+    NUM_EXAMPLES = BATCH_SIZE * 3000
     
     # Wavelet settings
     WAVELET_FAMILY = 'db4'  # Daubechies wavelet with 4 vanishing moments

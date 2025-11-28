@@ -335,7 +335,7 @@ class SimplerMP3DegradationPipeline:
         
         dataset = dataset.cache()
         dataset = dataset.shuffle(shuffle_buffer)
-        dataset = dataset.batch(batch_size)
+        dataset = dataset.repeat(100).batch(batch_size)
         
         # Add channel dimension
         dataset = dataset.map(
