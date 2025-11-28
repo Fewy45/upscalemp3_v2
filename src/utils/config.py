@@ -19,7 +19,7 @@ class Config_small: # swapped to 32 filters US 16 DS
     L2_REG = 0 *1e-6
     
     # Training settings
-    LEARNING_RATE = 1e-4
+    LEARNING_RATE = 1e-3
     EPOCHS = 100
     VAL_SPLIT = 0.1
     CHECKPOINT_DIR = "checkpoints"
