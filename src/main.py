@@ -16,7 +16,7 @@ from scipy import optimize
 from utils.Pipeline import (
     MP3DegradationPipeline
 )
-from utils.config import Config, RetrainConfig
+from utils.config import Config, RetrainConfig, Config_small
 from model import (
     WaveletUNet,
     gelu,
@@ -29,7 +29,7 @@ from model import (
 from utils.data_preparation import process_audio_for_prediction, reconstruct_audio_from_clips
 from pydub import AudioSegment
 
-config = RetrainConfig()
+config = Config_small()
 
 def load_saved_model(model_dir, filename):
     """Load the model with multiple fallback options."""
@@ -42,7 +42,6 @@ def load_saved_model(model_dir, filename):
         'DownsamplingLayer': DownsamplingLayer,
         'UpsamplingLayer': UpsamplingLayer,
         'GatedSkipConnection': GatedSkipConnection,
-        'pit_loss': pit_loss,
         'gelu': gelu
     }
 
@@ -177,10 +176,10 @@ def test_separation(model, audio_file, output_dir="separated"):
     audio, sample_rate = sf.read(audio_file)
     if len(audio.shape) > 1:
         audio = audio.mean(axis=1)
-    if sample_rate != 16000:
+    if sample_rate != 44100:
         print(f"Warning: Audio file sample rate is {sample_rate}Hz (expected 16kHz)")
     audio = audio / np.max(np.abs(audio))
-    chunk_size = 16000
+    chunk_size = 44100
     num_chunks = len(audio) // chunk_size
     
     if len(audio) < chunk_size:
@@ -204,7 +203,7 @@ def test_separation(model, audio_file, output_dir="separated"):
     
     for i, source in enumerate(separated_sources):
         output_path = os.path.join(output_dir, f"source_{i+1}.wav")
-        sf.write(output_path, source, 16000)
+        sf.write(output_path, source, 44100)
     
     print(f"Separated sources saved to {output_dir}")
 
@@ -439,13 +438,13 @@ def generate_prediction(model_dir, model_filename, audio_dir, audio_filename, cl
     # )
     
     for i, source in enumerate(separated_sources):
-        sf.write(os.path.join(output_dir, f"source_{i+1}.wav"), source, 16000)
+        sf.write(os.path.join(output_dir, f"source_{i+1}.wav"), source, 44100)
 
 def separate_mp4(video_dir, video_filename, audio_filename, start_time, length):
     video_file = os.path.join(video_dir, video_filename)
     print(f"Separating audio from {video_file}...")
     audio = AudioSegment.from_file(video_file, "mp4")#[start_time * 1000:(start_time + length) * 1000]
-    audio = audio.set_frame_rate(16000)
+    audio = audio.set_frame_rate(44100)
     audio.export(os.path.join(video_dir, audio_filename), format="wav")
     return os.path.join(video_dir, audio_filename)
 
@@ -464,8 +463,8 @@ if __name__ == "__main__":
     # ex2 = wavfile.read("data/ex2/true2.wav")[1]
     # sample = generate_sample_from_clips(ex1, ex2)
     # # print(sample)
-    # sf.write("data/ex2/mixed.wav", sample.numpy()[0] , 16000)
-    # sf.write("data/ex/individual_1.wav", source[0], 16000)
-    # sf.write("data/ex/individual_2.wav", source[1], 16000)
-    # sf.write("data/ex/individual_3.wav", source[2], 16000)
+    # sf.write("data/ex2/mixed.wav", sample.numpy()[0] , 44100)
+    # sf.write("data/ex/individual_1.wav", source[0], 44100)
+    # sf.write("data/ex/individual_2.wav", source[1], 44100)
+    # sf.write("data/ex/individual_3.wav", source[2], 44100)
     # generate_prediction(model_dir="models", model_filename="wavelet_unet_22_0.0002", audio_dir="data", audio_filename="joe.wav")
