@@ -313,6 +313,56 @@ Mean Squared Error (MSE) between predicted and original audio in the time domain
 
 ---
 
+### Overlap-Add Processing for Long Audio
+
+Since the model processes 1-second (44,100 sample) segments, longer audio files require a windowing strategy to avoid audible artifacts at segment boundaries. upscalemp3_v2 uses a **Hann window overlap-add** method:
+
+#### How It Works
+
+1. **Segmentation**: Input audio is split into overlapping 1-second clips with configurable overlap ratio (default 25%)
+
+2. **Windowing**: Each clip is multiplied by a modified Hann window before processing:
+   ```python
+   window = 0.25 * hann(44100) + 0.75  # Lighter windowing: 75% rectangular + 25% Hann
+   ```
+   This "lifted" Hann window preserves more of the original signal energy while still providing smooth transitions.
+
+3. **Processing**: Each windowed clip is passed through the model independently
+
+4. **Reconstruction**: Output clips are combined using overlap-add:
+   ```python
+   for each clip i:
+       output[start:end] += clip[i] * window
+       normalization[start:end] += window
+   
+   output /= normalization  # Normalize overlapping regions
+   ```
+
+#### Why This Matters
+
+- **No discontinuities**: The smooth window transitions eliminate clicking/popping at segment boundaries
+- **Perfect reconstruction**: When windows overlap correctly, the normalization ensures unity gain
+- **Configurable quality/speed tradeoff**: Higher overlap (e.g., 50%) = better quality but slower processing
+
+#### Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `clip_duration_seconds` | 1.0 | Length of each processing segment |
+| `window_overlap_ratio` | 0.25 | Overlap between consecutive segments (25%) |
+
+```python
+# Example: Process with 50% overlap for higher quality
+separated_sources = separate_audio(
+    model, 
+    audio_file,
+    clip_duration_seconds=1.0,
+    window_overlap_ratio=0.5  # 50% overlap
+)
+```
+
+---
+
 ## Evaluation
 
 The model is evaluated using Signal-to-Distortion Ratio (SDR):
