@@ -74,6 +74,150 @@ Input (44100 samples)
     └─────────┘
 ```
 
+### Encoder Block Detail
+
+Each encoder block applies convolution, normalization, and GELU activation, then decomposes the signal using DWT:
+
+```
+Input
+  │
+  ▼
+┌─────────────────────────────────────┐
+│         DownsamplingLayer           │
+│  ┌─────────────────────────────┐    │
+│  │ Conv1D (filter_size=16)     │    │
+│  └──────────────┬──────────────┘    │
+│                 ▼                   │
+│  ┌─────────────────────────────┐    │
+│  │     Layer Normalization     │    │
+│  └──────────────┬──────────────┘    │
+│                 ▼                   │
+│  ┌─────────────────────────────┐    │
+│  │           GELU              │    │
+│  └──────────────┬──────────────┘    │
+└─────────────────┼───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│            DWT Layer                │
+│  ┌─────────────────────────────┐    │
+│  │   Daubechies-4 Wavelet      │    │
+│  │   Decomposition (db4)       │    │
+│  └──────────────┬──────────────┘    │
+│                 │                   │
+│        ┌───────┴───────┐            │
+│        ▼               ▼            │
+│   [Approx (cA)]   [Detail (cD)]     │
+│        └───────┬───────┘            │
+│                ▼                    │
+│         Concatenate                 │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│       Down Process Block            │
+│      (UpsamplingLayer)              │
+│                                     │
+│  Separate processing for cA and cD  │
+│  with gated recombination           │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+            To Next Layer
+          (half temporal resolution)
+```
+
+### Decoder Block Detail
+
+Each decoder block reconstructs the signal using IDWT and merges with skip connections:
+
+```
+From Previous Layer
+        │
+        ▼
+┌─────────────────────────────────────┐
+│           IDWT Layer                │
+│  ┌─────────────────────────────┐    │
+│  │  Split: [Approx] [Detail]   │    │
+│  └──────────────┬──────────────┘    │
+│                 ▼                   │
+│  ┌─────────────────────────────┐    │
+│  │   Upsample (zero-insert)    │    │
+│  └──────────────┬──────────────┘    │
+│                 ▼                   │
+│  ┌─────────────────────────────┐    │
+│  │  Reconstruction Filters     │    │
+│  │  (rec_lo, rec_hi)           │    │
+│  └──────────────┬──────────────┘    │
+└─────────────────┼───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│         Up Process Block            │
+│  ┌─────────────────────────────┐    │
+│  │  Approx Conv + Norm + GELU  │    │
+│  └──────────────┬──────────────┘    │
+│                 ▼                   │
+│  ┌─────────────────────────────┐    │
+│  │  Detail Conv + Norm + GELU  │    │
+│  └──────────────┬──────────────┘    │
+│                 ▼                   │
+│  ┌─────────────────────────────┐    │
+│  │   Gated Recombination       │    │
+│  │   σ(gate) ⊙ features        │    │
+│  └──────────────┬──────────────┘    │
+└─────────────────┼───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│      Gated Skip Connection          │
+│                                     │
+│   Decoder ─►[Gate]─►σ─┐             │
+│                       ⊙─►Concat─►   │
+│   Encoder ─►[Gate]─►σ─┘      │      │
+│                              ▼      │
+│                       Layer Norm    │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│        Upsampling Block             │
+│  ┌─────────────────────────────┐    │
+│  │ Conv1D + Norm + GELU        │    │
+│  └──────────────┬──────────────┘    │
+│                 ▼                   │
+│  ┌─────────────────────────────┐    │
+│  │ Conv1D + Norm + GELU        │    │
+│  └──────────────┬──────────────┘    │
+└─────────────────┼───────────────────┘
+                  │
+                  ▼
+            To Next Layer
+         (double temporal resolution)
+```
+
+### Gated Skip Connection Detail
+
+```
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│  Decoder Features ──┬──► Conv1D(1) ──► Sigmoid ─┐   │
+│                     │                           │   │
+│                     └──────────► ⊙ ◄────────────┘   │
+│                                  │                  │
+│                                  ▼                  │
+│                              Concat ──► LayerNorm ──► Out
+│                                  ▲                  │
+│                                  │                  │
+│                     ┌──────────► ⊙ ◄────────────┐   │
+│                     │                           │   │
+│  Encoder Features ──┴──► Conv1D(1) ──► Sigmoid ─┘   │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+
+⊙ = element-wise multiplication (gating)
+```
+
 ### Model Configuration
 
 | Parameter | Value |
